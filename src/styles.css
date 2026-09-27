@@ -1,0 +1,417 @@
+:root {
+  color-scheme: dark;
+  background: #020b17;
+  font-family: Georgia, 'Times New Roman', serif;
+  --ivory: #f6e8cf;
+  --champagne: #e6bc78;
+  --navy: #020b17;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { margin: 0; min-height: 100%; background: var(--navy); }
+html { scroll-behavior: auto; }
+body { overflow-x: hidden; overscroll-behavior-y: none; }
+button, input, select { font: inherit; }
+main { position: relative; z-index: 1; }
+
+/* One master sticky stage for all six final screens. Every transition reuses the
+   approved V5 overlap timing, so there are no empty bands between chapters. */
+.story-stage {
+  position: relative;
+  height: 700svh;
+  background: var(--navy);
+}
+
+.sticky-viewport {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--navy);
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: var(--scene-z);
+  will-change: opacity, transform, filter;
+  pointer-events: none;
+}
+
+.scene-backdrop {
+  position: absolute;
+  inset: -7%;
+  width: 114%;
+  height: 114%;
+  object-fit: cover;
+  object-position: center;
+  z-index: -3;
+  filter: blur(34px) brightness(0.25) saturate(0.72);
+  transform: scale(1.045);
+  opacity: 0.98;
+  pointer-events: none;
+  user-select: none;
+}
+
+.art-frame {
+  --w-by-h: var(--scene-aspect);
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(100vw, calc(100svh * var(--w-by-h)));
+  height: min(100svh, calc(100vw / var(--w-by-h)));
+  transform: translate(-50%, -50%);
+  z-index: -2;
+}
+
+.section-art {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  z-index: 0;
+  user-select: none;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.scene-vignette {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(2,11,23,0.00) 0%, rgba(2,11,23,0.025) 47%, rgba(2,11,23,0.33) 100%),
+    linear-gradient(90deg, rgba(0,0,0,0.32), transparent 15%, transparent 85%, rgba(0,0,0,0.32));
+}
+
+.transition-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 0%, transparent 62%, rgba(2,11,23,0.12) 100%);
+}
+
+.celestial-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 30;
+  mix-blend-mode: screen;
+  opacity: 0.22;
+}
+
+.star-field { position: absolute; inset: 0; width: 100%; height: 100%; }
+.shooting-star {
+  position: absolute;
+  width: 100px;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255,230,190,0), rgba(255,230,190,0.80));
+  box-shadow: 0 0 8px rgba(255,207,140,0.38);
+  transform-origin: right center;
+  opacity: 0;
+}
+
+/* Venue image already contains the visual VIEW MAP button. This transparent
+   hotspot makes that exact artwork interactive without altering its appearance. */
+.map-hotspot {
+  position: absolute;
+  left: 28%;
+  top: 42.1%;
+  width: 44%;
+  height: 6.4%;
+  border-radius: 10px;
+  pointer-events: none;
+  z-index: 5;
+  outline: none;
+}
+.map-hotspot.is-enabled { pointer-events: auto; cursor: pointer; }
+.map-hotspot.is-enabled:focus-visible {
+  box-shadow: 0 0 0 2px rgba(246,232,207,.95), 0 0 22px rgba(230,188,120,.45);
+}
+
+
+/* The RSVP reference artwork contains a baked-in form. This feathered mask
+   neutralizes that printed UI beneath the real HTML controls, including the
+   baked Submit RSVP button that would otherwise reappear when the attendee
+   count fields collapse for “I’m not attending”. */
+.rsvp-art-mask {
+  position: absolute;
+  z-index: 7;
+  left: 10.8%;
+  right: 10.8%;
+  top: 24.2%;
+  bottom: 13.2%;
+  pointer-events: none;
+  background: linear-gradient(180deg,
+    rgba(2,17,31,.975) 0%,
+    rgba(2,17,31,.99) 20%,
+    rgba(3,21,37,.99) 82%,
+    rgba(3,21,37,.92) 100%);
+  border-radius: clamp(16px, 1.9vh, 24px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 3.5%, #000 91%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 3.5%, #000 91%, transparent 100%);
+}
+
+/* RSVP is rendered as one real HTML card over the artwork. The card uses an
+   almost-opaque midnight surface so the form printed in the reference artwork
+   cannot show through and create duplicate labels/controls. */
+.rsvp-overlay,
+.rsvp-success {
+  position: absolute;
+  z-index: 8;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .28s ease;
+}
+
+.rsvp-overlay.is-enabled,
+.rsvp-success.is-enabled {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.rsvp-overlay {
+  left: 13.2%;
+  right: 13.2%;
+  top: 26.1%;
+  padding: 4.1% 5.2% 4.6%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.05vh, 15px);
+  border: 1px solid rgba(230,188,120,.78);
+  border-radius: clamp(14px, 1.8vh, 22px);
+  background:
+    linear-gradient(180deg, rgba(2,17,31,.985), rgba(3,22,38,.985));
+  box-shadow:
+    0 18px 44px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+.rsvp-choice-group {
+  display: grid;
+  gap: clamp(6px, .65vh, 10px);
+  margin-bottom: clamp(2px, .25vh, 5px);
+}
+
+.rsvp-choice {
+  display: flex;
+  align-items: center;
+  gap: clamp(9px, 1.1vh, 14px);
+  min-height: clamp(30px, 3.0vh, 42px);
+  color: rgba(246,232,207,.96);
+  font-size: clamp(12px, 1.65vh, 18px);
+  line-height: 1.2;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rsvp-choice input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.choice-dot {
+  flex: 0 0 auto;
+  width: clamp(20px, 2.45vh, 30px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px solid rgba(240,205,151,.92);
+  background: rgba(2,11,23,.40);
+  box-shadow: inset 0 0 0 4px rgba(2,17,31,.96);
+  transition: background .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+
+.rsvp-choice.selected .choice-dot {
+  background: #efbd79;
+  box-shadow:
+    inset 0 0 0 5px rgba(255,244,220,.96),
+    0 0 12px rgba(230,188,120,.28);
+}
+
+.rsvp-choice:focus-within .choice-dot {
+  outline: 2px solid rgba(255,240,215,.90);
+  outline-offset: 2px;
+}
+
+.rsvp-field {
+  display: grid;
+  gap: clamp(4px, .45vh, 7px);
+  min-width: 0;
+}
+
+.rsvp-field label {
+  color: rgba(246,232,207,.96);
+  font-size: clamp(11px, 1.45vh, 16px);
+  line-height: 1.1;
+}
+
+.rsvp-count-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(8px, 1.1vh, 14px);
+}
+
+.rsvp-control {
+  position: relative;
+  width: 100%;
+  height: clamp(38px, 4.25vh, 52px);
+  min-height: 38px;
+  border: 1px solid rgba(230,188,120,.72);
+  border-radius: clamp(8px, .85vh, 11px);
+  padding: 0 clamp(12px, 1.55vh, 18px);
+  background: rgba(6, 28, 47, .96);
+  color: var(--ivory);
+  outline: none;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(12px, 1.55vh, 17px);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.018),
+    0 3px 10px rgba(0,0,0,.12);
+}
+
+.rsvp-control::placeholder {
+  color: rgba(246,232,207,.43);
+}
+
+.rsvp-control:focus {
+  border-color: rgba(247,215,166,.98);
+  background: rgba(6,30,50,.99);
+  box-shadow: 0 0 0 2px rgba(230,188,120,.12), 0 0 14px rgba(230,188,120,.12);
+}
+
+select.rsvp-control {
+  appearance: auto;
+  cursor: pointer;
+}
+
+.rsvp-submit {
+  position: relative;
+  width: 100%;
+  height: clamp(42px, 4.8vh, 58px);
+  margin-top: clamp(3px, .4vh, 6px);
+  border: 0;
+  border-radius: clamp(9px, .9vh, 12px);
+  background: linear-gradient(90deg, #c77e45 0%, #f1c486 48%, #e49a58 100%);
+  color: #102033;
+  letter-spacing: .075em;
+  font-weight: 600;
+  font-size: clamp(12px, 1.55vh, 18px);
+  cursor: pointer;
+  box-shadow: 0 8px 22px rgba(0,0,0,.20);
+  transition: transform .2s ease, filter .2s ease, box-shadow .2s ease;
+}
+
+.rsvp-submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.035);
+  box-shadow: 0 10px 26px rgba(0,0,0,.24);
+}
+
+.rsvp-submit:focus-visible {
+  outline: 2px solid #fff1d6;
+  outline-offset: 2px;
+}
+
+.rsvp-submit:disabled {
+  cursor: wait;
+  opacity: .82;
+}
+
+.rsvp-error {
+  padding: .55em .75em;
+  text-align: center;
+  border-radius: 8px;
+  color: #ffe1dc;
+  background: rgba(89, 22, 24, .86);
+  font-size: clamp(10px, 1.2vh, 14px);
+}
+
+.rsvp-success {
+  left: 13.2%;
+  right: 13.2%;
+  top: 28.4%;
+  padding: 9% 7% 7%;
+  border: 1px solid rgba(230,188,120,.78);
+  border-radius: 18px;
+  background: rgba(3,20,35,.985);
+  color: var(--ivory);
+  text-align: center;
+  box-shadow: 0 16px 50px rgba(0,0,0,.30);
+}
+
+.rsvp-success .success-star {
+  color: var(--champagne);
+  font-size: clamp(34px, 5vh, 64px);
+  margin-bottom: .25em;
+}
+
+.rsvp-success strong {
+  display: block;
+  font-size: clamp(24px, 4vh, 48px);
+  font-weight: 400;
+  line-height: 1.06;
+}
+
+.rsvp-success p {
+  margin: 1.2em auto 1.6em;
+  max-width: 28em;
+  font-size: clamp(12px, 1.8vh, 18px);
+  line-height: 1.5;
+}
+
+.rsvp-success button {
+  border: 1px solid rgba(230,188,120,.6);
+  border-radius: 999px;
+  padding: .65em 1.25em;
+  color: var(--ivory);
+  background: rgba(230,188,120,.08);
+  cursor: pointer;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 700px) and (orientation: portrait) {
+  .story-stage { height: 680svh; }
+  .scene-backdrop {
+    filter: blur(20px) brightness(0.22) saturate(0.74);
+    opacity: 0.80;
+  }
+  .scene-vignette {
+    background:
+      radial-gradient(ellipse at 50% 42%, transparent 0%, transparent 57%, rgba(2,11,23,.25) 100%),
+      linear-gradient(90deg, rgba(0,0,0,.16), transparent 10%, transparent 90%, rgba(0,0,0,.16));
+  }
+  .celestial-layer { opacity: .17; }
+  .rsvp-control { font-size: 16px; }
+}
+
+@media (max-aspect-ratio: 9/16) {
+  /* Very tall devices: keep the complete artwork instead of cropping it. */
+  .art-frame {
+    width: min(100vw, calc(100svh * var(--scene-aspect)));
+    height: min(100svh, calc(100vw / var(--scene-aspect)));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-stage { height: 620svh; }
+  .celestial-layer { opacity: .13; }
+  .shooting-star { display: none; }
+}

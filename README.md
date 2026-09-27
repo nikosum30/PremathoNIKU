@@ -1,29 +1,50 @@
-# PremathoNIKU Website V1
+# PremathoNIKU — Final Wedding Reception Website
 
-A mobile-first interactive wedding reception RSVP microsite for Nithin & Kusuma.
+This build contains the six finalized screens in this order:
 
-## Included
-- Smooth vertical sections
-- GSAP + ScrollTrigger parallax/reveals
-- Lenis smooth scrolling
-- Mobile + desktop responsive treatment
-- Live countdown to Jan 9, 2027 7:00 PM America/New_York
-- Google Maps venue hotspot
-- Functional RSVP form connected to Google Apps Script
-- Attending / not-attending flow
-- Confirmation screen
-- Reduced-motion support
+1. Nithin & Kusuma — Join Our Wedding Reception
+2. Charlotte — Where Our Story Began
+3. Invitation — January 9, 2027 at 7:00 PM
+4. Utsav Event Spaces + interactive View Map hotspot
+5. Dress Code — An Evening to Shine
+6. RSVP — interactive form connected to Google Sheets via the supplied Apps Script endpoint
 
-## Deploy to GitHub Pages
-Upload these files to the root of the `PremathoNIKU` repository:
-- index.html
-- styles.css
-- script.js
-- assets/
+## Run locally
 
-Then go to GitHub repository → Settings → Pages → Deploy from branch → main / root.
+```bash
+npm install
+npm run dev
+```
 
-## Important before public launch
-1. Replace image-heavy section screenshots with text-free scene assets for best desktop quality.
-2. Add update-existing-RSVP logic in Apps Script to prevent duplicates.
-3. Optionally add email notification on new RSVP.
+## Production build
+
+```bash
+npm run build
+```
+
+The output is generated in `dist/` and is compatible with static hosting such as GitHub Pages.
+
+## Transition model
+
+All five scene-to-scene transitions use the locked V5 overlap behavior:
+
+- incoming scene becomes visible first
+- outgoing scene then fades in gradual steps
+- both scenes coexist during the handoff
+- outgoing scene reaches zero only after the incoming scene has fully taken over
+- the persistent star layer remains above the full journey
+
+This avoids blank/dark gaps between portrait screens on desktop.
+
+## RSVP
+
+The RSVP form submits to the Google Apps Script endpoint already configured for this project. The final background artwork remains visually unchanged; real form controls are positioned over the baked input areas.
+
+
+## V6 RSVP fix
+The RSVP screen now uses a single real HTML card with its own labels and controls over an opaque midnight panel. This intentionally covers the baked form elements in the reference artwork so fields, radio buttons, selects, and the submit button no longer visually overlap. All scene transitions remain unchanged from the locked V5 model.
+
+
+V7 changes:
+- Dress Code ↔ RSVP uses a quicker symmetric crossfade; all other locked transitions are unchanged.
+- RSVP baked-in artwork controls are masked beneath the real HTML form to prevent duplicate Submit RSVP/UI, especially in the Not Attending state.
