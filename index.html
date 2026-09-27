@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#041526" />
+  <meta name="description" content="Nithin & Kusuma — Charlotte Wedding Reception — January 9, 2027" />
+  <title>PremathoNIKU — Nithin & Kusuma</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Parisienne&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="progress" aria-hidden="true"><span id="progressBar"></span></div>
+  <button class="soundless-menu" aria-label="Open navigation" id="menuBtn">☰</button>
+  <nav class="nav-panel" id="navPanel" aria-label="Sections">
+    <a href="#hero">Welcome</a><a href="#connection">Our Story</a><a href="#date">Date</a><a href="#city">Charlotte</a><a href="#venue">Venue</a><a href="#dress">Dress</a><a href="#countdown">Countdown</a><a href="#rsvp">RSVP</a>
+  </nav>
+
+  <main>
+    <section id="hero" class="scene image-scene" data-image="assets/01-hero.png">
+      <div class="scene-image"></div>
+      <div class="swipe-cue"><span>Scroll to explore</span><i></i></div>
+    </section>
+
+    <section id="connection" class="scene image-scene" data-image="assets/02-connection.png"><div class="scene-image"></div></section>
+    <section id="date" class="scene image-scene" data-image="assets/03-date.png"><div class="scene-image"></div></section>
+    <section id="city" class="scene image-scene" data-image="assets/04-city.png"><div class="scene-image"></div></section>
+
+    <section id="venue" class="scene image-scene interactive-venue" data-image="assets/05-venue.png">
+      <div class="scene-image"></div>
+      <a class="map-hotspot" href="https://www.google.com/maps/search/?api=1&query=Utsav+Event+Spaces+5533+Westpark+Dr+Charlotte+NC+28217" target="_blank" rel="noopener" aria-label="View Utsav Event Spaces on Google Maps"></a>
+    </section>
+
+    <section id="dress" class="scene image-scene" data-image="assets/06-dress.png"><div class="scene-image"></div></section>
+
+    <section id="countdown" class="scene live-scene">
+      <div class="blur-bg" style="--bg:url('assets/07-countdown.png')"></div>
+      <div class="live-overlay"></div>
+      <div class="countdown-wrap reveal">
+        <p class="eyebrow">COUNTDOWN TO<br>OUR CELEBRATION</p>
+        <div class="gold-divider"><span></span><b>✦</b><span></span></div>
+        <div class="celestial-ring">
+          <div class="timer"><div><strong id="days">000</strong><small>DAYS</small></div><div><strong id="hours">00</strong><small>HOURS</small></div><div><strong id="minutes">00</strong><small>MINUTES</small></div><div><strong id="seconds">00</strong><small>SECONDS</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="rsvp" class="scene live-scene rsvp-scene">
+      <div class="blur-bg" style="--bg:url('assets/07-countdown.png')"></div>
+      <div class="live-overlay darker"></div>
+      <div class="rsvp-shell reveal">
+        <div class="rsvp-title"><h2>RSVP</h2><div class="gold-divider"><span></span><b>✦</b><span></span></div><p>We would love to<br>celebrate with you!</p></div>
+        <form id="rsvpForm" class="rsvp-card" novalidate>
+          <div class="attendance-group">
+            <label><input type="radio" name="attendance" value="Attending" checked><span></span>I'll be attending</label>
+            <label><input type="radio" name="attendance" value="Not Attending"><span></span>I'm not attending</label>
+          </div>
+
+          <label class="field"><span>Guest Name</span><input name="guestName" autocomplete="name" required placeholder="Your full name"></label>
+          <div class="attending-only">
+            <label class="field"><span>Number of Adults</span><select name="adults"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+            <label class="field"><span>Number of Children</span><select name="children"><option>0</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option></select></label>
+          </div>
+          <label class="field"><span>Phone Number</span><input name="phone" autocomplete="tel" required placeholder="Your phone number"></label>
+          <label class="field"><span>Email Address</span><input name="email" type="email" autocomplete="email" required placeholder="youremail@email.com"></label>
+
+          <div id="declineMessage" class="decline-message" hidden>
+            <div class="lotus">✦</div><h3>Thank you<br><em>for letting us know!</em></h3><p>We'll miss having you there, but your love and support mean so much to us.</p>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submitBtn">SUBMIT RSVP</button>
+          <p class="form-status" id="formStatus" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <section id="confirmation" class="scene live-scene confirmation" hidden>
+      <div class="blur-bg" style="--bg:url('assets/07-countdown.png')"></div>
+      <div class="live-overlay"></div>
+      <div class="confirm-card reveal" id="confirmCard"></div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lenis@1.1.18/dist/lenis.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
